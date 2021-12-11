@@ -1,4 +1,5 @@
 pub mod chapter_one;
+pub mod chapter_two;
 
 use futures::executor::block_on;
 
