@@ -1,3 +1,5 @@
+use std::{pin::Pin, task::Context};
+
 use crate::chapter_two::future_trait::{SimpleFuture, Poll};
 
 pub struct Join<FutureA, FutureB> {
@@ -12,7 +14,7 @@ where
 {
     type Output = ();
 
-    fn poll(&mut self, wake: fn()) -> Poll<Self::Output> {
+    fn poll(self: Pin<&mut Self>, wake: &mut Context<'_>) -> Poll<Self::Output> {
         if let Some(a) = &mut self.a {
             if let Poll::Ready(()) = a.poll(wake) {
                 self.a.take();

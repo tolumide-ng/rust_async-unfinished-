@@ -1,3 +1,5 @@
+use std::{pin::Pin, task::Context};
+
 use crate::chapter_two::future_trait::{Poll, SimpleFuture};
 
 struct Socket {}
@@ -23,7 +25,7 @@ pub struct SocketRead<'a> {
 impl SimpleFuture for SocketRead<'_> {
     type Output = Vec<u8>;
 
-    fn poll(&mut self, wake: fn()) -> Poll<Self::Output> {
+    fn poll(self: Pin<&mut Self>, wake: &mut Context<'_>) -> Poll<Self::Output> {
         if self.socket.has_data_to_read() {
             Poll::Ready(self.socket.data_to_read())
         } else {
