@@ -1,6 +1,7 @@
 pub mod chapter_one;
 pub mod chapter_two;
 pub mod others;
+pub mod pinning;
 
 
 use std::time::Duration;
