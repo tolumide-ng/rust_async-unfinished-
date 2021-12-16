@@ -1,11 +1,12 @@
-use std::net::{TcpListener, TcpStream};
+use async_std::net::TcpListener;
+use async_std::prelude::*;
 // pub mod chapter_one;
 // pub mod chapter_two;
 // pub mod others;
 // pub mod pinning;
 pub mod http_server;
 
-use http_server::synchronous::handle_connection;
+use http_server::asynchronous::handle_connection;
 // use std::time::Duration;
 
 // use chapter_two::executor::new_executor_and_spawner;
@@ -14,16 +15,31 @@ use http_server::synchronous::handle_connection;
 
 
 
-
-fn main() {
+#[async_std::main]
+async fn main() {
     // let (executor, spawner) = new_executor_and_spawner();
 
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let listener = TcpListener::bind("127.0.0.1:7878").await.unwrap();
+    let mut incoming = listener.incoming();
 
-    for stream in listener.incoming() {
+    while let Some(stream) = incoming.next().await {
         let stream = stream.unwrap();
-        handle_connection(stream)
+        handle_connection(stream).await;
     }
+
+    // listener
+    //     .incoming()
+    //     .for_each_concurrent(None, |tcpstream| async move {
+    //     let tcpstream = tcpstream.unwrap();
+    //     handle_connection(tcpstream).await;
+    // })
+    // .await;
+
+
+    // for stream in listener.incoming() {
+    //     let stream = stream.unwrap();
+    //     handle_connection(stream)
+    // }
 
     // spawner.spawn(async {
     //     println!("howdy!");
